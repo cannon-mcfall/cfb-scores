@@ -3,6 +3,13 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
+  	"kv_namespaces": [
+    {
+      "binding": "SCORES",
+      "id": "8b0020a337b043e3aeeed698d1ce311d"
+    }
+  	],
+
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "cfb-scores",
 	"main": "src/index.ts",
@@ -14,6 +21,7 @@
 	"compatibility_flags": [
 		"nodejs_compat"
 	]
+	
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
