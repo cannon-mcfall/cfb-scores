@@ -65,7 +65,7 @@ function getScoreboardWeek(now = new Date()): ScoreboardWeek {
    * Before the season starts, show Week 1 so visitors can
    * see upcoming games.
    */
-  const weekOne = new Date(`${year}-08-29T00:00:00-04:00`);
+  const weekOne = new Date(`${year}-09-02T00:00:00-04:00`);
 
   if (now < weekOne) {
     return {
