@@ -1,4 +1,4 @@
-import { getGames, type Game } from "./ncaa";
+import { getGames, type Game } from "./espn";
 
 interface Env {
   SCORES: KVNamespace;
@@ -121,19 +121,25 @@ function renderTeam(team: Game["home"]): string {
   return `${rank}${team.name}`;
 }
 
-function renderGame(game: Game): string {
+export function renderGame(game: Game): string {
   const category = gameCategory(game);
 
   let status = "";
 
   if (category === "live") {
-    status =
+    const clock =
+      game.statusText ||
       [
         game.period ? `Q${game.period}` : "",
         game.clock,
       ]
         .filter(Boolean)
-        .join(" ") || "LIVE";
+        .join(" ");
+
+    status =
+      [clock || "LIVE", game.situation]
+        .filter(Boolean)
+        .join(" | ");
   }
 
   if (category === "final") {
@@ -146,10 +152,18 @@ function renderGame(game: Game): string {
 
   const awayName = renderTeam(game.away);
   const homeName = renderTeam(game.home);
+  const awayPossession =
+    category === "live" && game.possession === "away"
+      ? "▶ "
+      : "  ";
+  const homePossession =
+    category === "live" && game.possession === "home"
+      ? "▶ "
+      : "  ";
 
   return `${escapeHtml(status)}
-	${escapeHtml(awayName.padEnd(24))} ${escapeHtml(game.away.score)}
-	${escapeHtml(homeName.padEnd(24))} ${escapeHtml(game.home.score)}`;
+	${escapeHtml(`${awayPossession}${awayName}`.padEnd(26))} ${escapeHtml(game.away.score)}
+	${escapeHtml(`${homePossession}${homeName}`.padEnd(26))} ${escapeHtml(game.home.score)}`;
 }
 
 function renderSection(
@@ -219,7 +233,7 @@ async function loadScores(
 
   const now = Date.now();
 
-  // Recent enough: don't even contact NCAA.
+  // Recent enough: don't even contact ESPN.
   if (
     cached &&
     now - cached.updatedAt < FRESH_FOR_MS
