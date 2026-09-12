@@ -11,6 +11,7 @@ export interface Game {
   home: Team;
   possession?: "away" | "home";
   situation?: string;
+  lastPlay?: string;
   statusText?: string;
   status: string;
   period: string;
@@ -47,6 +48,9 @@ interface EspnCompetition {
   competitors?: EspnCompetitor[];
   situation?: {
     downDistanceText?: string;
+    lastPlay?: {
+      text?: string;
+    };
     possession?: string;
   };
   status?: EspnStatus;
@@ -68,6 +72,18 @@ const CONFERENCES_BY_ID: Record<string, string> = {
   "5": "big-ten",
   "8": "sec",
 };
+
+function compactPlay(text: string | undefined): string | undefined {
+  const trimmed = text?.trim();
+
+  if (!trimmed) {
+    return undefined;
+  }
+
+  return trimmed.length <= 120
+    ? trimmed
+    : `${trimmed.slice(0, 117).trimEnd()}...`;
+}
 
 function gameStatus(status: EspnStatus): string {
   if (status.type?.state === "in") {
@@ -158,6 +174,10 @@ export async function getGames(): Promise<Game[]> {
         situation:
           status === "live"
             ? competition.situation?.downDistanceText
+            : undefined,
+        lastPlay:
+          status === "live"
+            ? compactPlay(competition.situation?.lastPlay?.text)
             : undefined,
         statusText:
           status === "live"

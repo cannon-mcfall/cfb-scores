@@ -73,6 +73,29 @@ describe("score rendering", () => {
 			"Q2 10:32 | 2nd &amp; 4 at TEM 4"
 		);
 	});
+
+	it("shows the escaped last play for a live game", () => {
+		const output = renderGame(
+			makeGame({
+				lastPlay: "J. Smith rush for 6 yards & a first down",
+			})
+		);
+
+		expect(output).toContain(
+			"Last: J. Smith rush for 6 yards &amp; a first down"
+		);
+	});
+
+	it("does not show the last play after the game", () => {
+		const output = renderGame(
+			makeGame({
+				status: "final",
+				lastPlay: "End of game",
+			})
+		);
+
+		expect(output).not.toContain("Last:");
+	});
 });
 
 describe("ESPN scoreboard data", () => {
@@ -102,6 +125,9 @@ describe("ESPN scoreboard data", () => {
 										possession: "213",
 										downDistanceText:
 											"2nd & 4 at TEM 4",
+										lastPlay: {
+											text: "J. Smith run for 6 yards",
+										},
 									},
 									competitors: [
 										{
@@ -136,6 +162,9 @@ describe("ESPN scoreboard data", () => {
 		expect(games).toHaveLength(1);
 		expect(games[0].possession).toBe("away");
 		expect(games[0].situation).toBe("2nd & 4 at TEM 4");
+		expect(games[0].lastPlay).toBe(
+			"J. Smith run for 6 yards"
+		);
 		expect(games[0].away).toMatchObject({
 			name: "Penn State",
 			score: "14",

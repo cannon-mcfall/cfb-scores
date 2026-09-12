@@ -161,7 +161,12 @@ export function renderGame(game: Game): string {
       ? "▶ "
       : "  ";
 
-  return `${escapeHtml(status)}
+  const lastPlay =
+    category === "live" && game.lastPlay
+      ? `\nLast: ${escapeHtml(game.lastPlay)}`
+      : "";
+
+  return `${escapeHtml(status)}${lastPlay}
 	${escapeHtml(`${awayPossession}${awayName}`.padEnd(26))} ${escapeHtml(game.away.score)}
 	${escapeHtml(`${homePossession}${homeName}`.padEnd(26))} ${escapeHtml(game.home.score)}`;
 }
